@@ -1,8 +1,8 @@
 %  AE4872: Satellite Orbit Determination 
-%  Homework Assignment 1: Fitting of Doppler range rate observation of Delfi-C3 recorded at TU Delft groundstation.
-%  Author : Ali Nawaz, Student number : 4276477
-
-%  Faculty of Aerospace Engineering, Delft University of Technology.
+%  Homework Assignment 1: Parameter Fitting
+%  Authors : Ali Nawaz, Student number : 4276477 ; Rayan Mazouz, Student
+%  number: 4147146
+%  Facult of Aerospace Engineering, Delft University of Technology.
 
 close all, clear all, clc;
 
@@ -163,7 +163,7 @@ freq_fitn = freq_fit_norm_n* ( max(freq) - min(freq) ) + min(freq); % De-normali
 
 figure(14)
 plot(time, freq,'r-',time,freq_fitn,'b--');
-legend('Observed Frequency [Hz]','Estimated Frequency Pseudoinverse[Hz]');
+legend('Observed Frequency [Hz]','Estimated Frequency SVD [Hz]');
 title(['Observed freq. vs estimated freq. for n = ' num2str(n)]);
 xlabel('Time [s]');
 ylabel('Frequency [Hz]')
@@ -177,6 +177,13 @@ resn_med = mean(resn);  % Residual median
 resn_std = std(resn);   % Residual standard deviation
 resn_rms = rms(resn);   % Co-efficient of determination R^2
 
+figure(123)
+plot(time, resn);
+title(['Residual between obs. and est. freq. for n=' num2str(n)]);
+legend( 'Residual frequency via SVD [Hz]');
+xlabel( 'Time [s]');
+ylabel( 'Frequency [Hz]');
+grid on
 %% Part 1D
 prompt = ('Please enter the max integar value of n for F-test: ');
 n = input(prompt);
@@ -263,17 +270,15 @@ figure(16)
 title('F-test results');
 subplot(1,2,1)
 hold on
-% plot(1:length(h_res), f_val,'*');
 for zz=1:length(p_res)
-    if p_res(zz)>0.05
-        plot(zz, p_res(zz),'ro');
+    if h_res(zz)==1
+        plot(zz, h_res(zz),'ro');
     else
-        plot(zz,p_res(zz),'b*');
+        plot(zz,h_res(zz),'b*');
     end
 end
-% legend('p>0.05','p=<0.05');
 title('vartest2');
-ylabel('p <');
+ylabel('Test result');
 xlabel('n value');
 hold off
 grid on
@@ -300,42 +305,42 @@ hold off
 grid on
 
 %% Part 1E
-% An optimal of n=5 is obtained. 
+% An optimal of n=4 is obtained. 
 
-A5_norm = zeros(length(time_norm), 5+1); % initialising normalised A matrix for 5th order polynomial
-A5_norm(:,1) = 1;
+A4_norm = zeros(length(time_norm), 4+1); % initialising normalised A matrix for 5th order polynomial
+A4_norm(:,1) = 1;
 
 for a = 1:length(time_norm)             % Defining normalised A matrix for nth order polynomial
-    for b = 1:5
-        A5_norm(a,b+1) = time_norm(a)^(2*b-1);
+    for b = 1:4
+        A4_norm(a,b+1) = time_norm(a)^(2*b-1);
     end
 end
-[U5,S5,V5] = svd(A5_norm,'econ'); % Singular value decomposition of A, to avoid singularity errors or solution manifold due to rank deficit
-condition_number5 = S5(1,1)/S5(end,end); % Indicates the number of potential digit that can be lost in any numerical calculations when A is computed directly.
-S5_inv_diag = [];
-for nn=1:length(S5)
-    S5_inv_diag = [S5_inv_diag,inv(S5(nn,nn))];
+[U4,S4,V4] = svd(A4_norm,'econ'); % Singular value decomposition of A, to avoid singularity errors or solution manifold due to rank deficit
+condition_number5 = S4(1,1)/S4(end,end); % Indicates the number of potential digit that can be lost in any numerical calculations when A is computed directly.
+S4_inv_diag = [];
+for nn=1:length(S4)
+    S4_inv_diag = [S4_inv_diag,inv(S4(nn,nn))];
 end
-S5_inv = diag(S5_inv_diag);
-x5 = V5*S5_inv*U5'*freq_norm; % Parameter estimation via SVD aided LSQ
+S4_inv = diag(S4_inv_diag);
+x4 = V4*S4_inv*U4'*freq_norm; % Parameter estimation via SVD aided LSQ
 
 % x5 = ((transpose(A5_norm)*A5_norm))\transpose(A5_norm)*freq_norm; % Parameter estimation via LSQ with pinv.
 
-freq_fit_norm_5 = A5_norm*x5; % Normalised plot-fitted freq plot
+freq_fit_norm_4 = A4_norm*x4; % Normalised plot-fitted freq plot
 % freq_fitn = freq_fit_norm_n* ( max(freq) - min(freq) ) + mean(freq); % De-normalising fitted frequency
 % freq_fitn = freq_fit_norm_n* ( max(freq) - min(freq) ) + ( max(freq) + min(freq))/2; % De-normalising fitted frequency
-freq_fit5 = freq_fit_norm_5* ( max(freq) - min(freq) ) + min(freq); % De-normalising fitted frequency
+freq_fit4 = freq_fit_norm_4* ( max(freq) - min(freq) ) + min(freq); % De-normalising fitted frequency
 
 dfreq =[]; % Frequency difference between consecutive freq. elements
 dtime =[]; % Time difference between consecutive time elements
 for c = 2: length(time)
-    dfreq = [dfreq;freq_fit5(c) - freq_fit5(c-1)];
+    dfreq = [dfreq;freq_fit4(c) - freq_fit4(c-1)];
     dtime = [dtime; time(c) - time(c-1)];
 end
 dfreq_dtime = dfreq./dtime;
 index_FCA = find( abs(dfreq_dtime)==max(abs(dfreq_dtime))); % Finding the inflection point for closest approach
 
-FCA = freq_fit5(index_FCA); % Frequency of closest approach
+FCA = freq_fit4(index_FCA); % Frequency of closest approach
 TCA = time(index_FCA);      % Time of closest approach
 
 %Verfication of numerical results with visual results
@@ -346,3 +351,4 @@ title('$\frac{dF}{dt}$ vs time','Interpreter','latex');
 xlabel('Time [s]');
 ylabel('$\frac{dF}{dt}$ [$\frac{1}{s^{2}}$]','Interpreter','latex');
 grid on
+
