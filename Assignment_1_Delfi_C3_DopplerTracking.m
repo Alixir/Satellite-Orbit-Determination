@@ -1,6 +1,6 @@
 %  AE4872: Satellite Orbit Determination 
 %  Homework Assignment 1: Parameter Fitting
-%  Authors :    Ali Nawaz, Student number : 4276477               
+%  Author :Ali Nawaz           
 %  Facult of Aerospace Engineering, Delft University of Technology.
 
 close all, clear all, clc;
