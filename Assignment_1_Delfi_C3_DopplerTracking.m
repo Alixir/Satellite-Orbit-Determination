@@ -1,6 +1,6 @@
 %  AE4872: Satellite Orbit Determination 
 %  Homework Assignment 1: Parameter Fitting
-%  Author :Ali Nawaz           
+%  Author :    Ali Nawaz                
 %  Facult of Aerospace Engineering, Delft University of Technology.
 
 close all, clear all, clc;
@@ -194,6 +194,15 @@ grid on
 % Residual information
 
 resn = freq - freq_fitn; % Residual between estimated and observed frequencies.
+
+% Residual plot for n
+figure(20)
+plot(time,resn);
+legend('Residual Frequency [Hz]');
+xlabel('Time [s]');
+ylabel('Residual Frequency [Hz]');
+title(['Residual between obs. and est. freq. for n=' num2str(n)]);
+grid on
 
 resn_mean = mean(resn); % Residual mean
 resn_med = mean(resn);  % Residual median
