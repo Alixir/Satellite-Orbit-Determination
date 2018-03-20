@@ -1,6 +1,6 @@
 # Satellite-Orbit-Determination
 Assignments undertaken as part of the course "AE4872 Satellite Orbit Determination" taught at TU Delft. 
-Repository consists of the following 4 assingments:
+Repository consists of the following 4 assignments:
 
 1. Fitting of Doppler range rate observation of Delfi-C3 recorded at TU Delft groundstation.
 2. GPS single point positioning.
