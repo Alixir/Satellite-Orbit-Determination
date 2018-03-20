@@ -7,4 +7,6 @@ Repository consists of the following 4 assignments:
 3. Position determination of one of the SWARM satellites with the aid of LSQ combined with observation, initial state vector and dynamic parameters.
 4. Position determination of one of the SWARM satellites with application of Kalman Filter.
 
+Files provided include a checklist of the task for each of the assignments mentioned. Corresponding results provided in form of reports. And finally Matlab scripts outlining the algorithms used.
+
 
